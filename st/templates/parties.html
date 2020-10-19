@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Parties{% endblock %}
+
+{% block content %}
+    {% if parties %}
+        {% for party in parties %}
+            <a href="{% url 'party' party_id=party.id %}">{{ party.name }}</a>
+        {% endfor %}
+    {% else %}
+        <p>You don't have any active parties now.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ party.name }}{% endblock %}
+
+{% block content %}
+    <h2>{{ party.name }}</h2>
+    <p>{{ party.description }}</p>
+    {% if curr_member.present_to %}
+        <p>
+            You're presenting to:
+            <b>{{ curr_member.present_to.user.username }}</b>
+        </p>
+    {% else %}
+        <p>
+            It's unknown yet whom you're presenting to.
+            The game is starting {{ party.start_game }}.
+            You can set your scores with form bellow.
+        </p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Apply</button>
+        </form>
+        {{ form.media }}
+        <script>
+            $('.slider').slider();
+        </script>
+    {% endif %}
+{% endblock %}
