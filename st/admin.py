@@ -63,21 +63,24 @@ class MemberInline(admin.TabularInline):
     form = MemberInlineForm
 
 
-
 class PartyAdmin(admin.ModelAdmin):
     inlines = (MemberInline,)
     list_display = ('name', 'date', 'status')
+    readonly_fields = ('status',)
     change_form_template = 'admin/party_change_form.html'
 
-    def get_queryset(self, request):
-        return super().get_queryset(request).filter(status=Party.INACTIVE)
-
     def get_urls(self):
-        custom_urls = [path(
-            '<path:party_id>/activate/',
-            self.admin_site.admin_view(self.activate_party),
-            name='st_party_activate'
-        )]
+        custom_urls = [
+            path(
+                '<path:party_id>/activate/',
+                self.admin_site.admin_view(self.activate_party),
+                name='st_party_activate'),
+            path(
+                '<path:party_id>/play/',
+                self.admin_site.admin_view(self.play_party),
+                name='st_party_play'
+            )
+        ]
         return custom_urls + super().get_urls()
 
     def activate_party(self, request, party_id):
@@ -95,8 +98,18 @@ class PartyAdmin(admin.ModelAdmin):
         # todo: use json response
         return HttpResponse()
 
-
-
+    def play_party(self, request, party_id):
+        try:
+            party = Party.objects.get(id=party_id, status=Party.ACTIVE)
+        except Party.DoesNotExist:
+            messages.add_message(request, messages.ERROR, 'Cannot find the party or it is already played')
+            return HttpResponseNotFound()
+        if not shuffle(party):
+            messages.add_message(request, messages.ERROR, 'Cannot shuffle members. Probably the rules are too strict.')
+            return HttpResponseServerError()
+        messages.add_message(request, messages.INFO, 'The party have been played')
+        # todo: use json response
+        return HttpResponse()
 
 
 admin.site.register(Party, PartyAdmin)

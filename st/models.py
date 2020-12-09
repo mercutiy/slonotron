@@ -24,19 +24,19 @@ class Party(models.Model):
         return self.name
 
     class Manager(models.Manager):
-        def get_user_parties(self, user, status=None):
+        def get_user_parties(self, user, statuses=None):
             parties = self.filter(member__user=user)
-            if status:
-                parties = parties.filter(status=status)
-            return parties
+            if statuses:
+                parties = parties.filter(status__in=statuses)
+            return parties.order_by('-date')
 
     objects = Manager()
 
 
 class Member(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    party = models.ForeignKey(Party, on_delete=models.PROTECT)
-    present_to = models.OneToOneField('Member', on_delete=models.PROTECT,
+    party = models.ForeignKey(Party, on_delete=models.CASCADE)
+    present_to = models.OneToOneField('Member', on_delete=models.CASCADE,
                                       null=True, default=None)
 
     class Meta:
@@ -47,6 +47,6 @@ class Member(models.Model):
 
 
 class Score(models.Model):
-    from_member = models.ForeignKey(Member, on_delete=models.PROTECT, related_name='from_scale')
-    to_member = models.ForeignKey(Member, on_delete=models.PROTECT, related_name='to_scale')
+    from_member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='from_score')
+    to_member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='to_score')
     value = models.SmallIntegerField(default=5)

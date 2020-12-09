@@ -12,8 +12,18 @@
         jQuery.noConflict()(document).ready(function() {
             jQuery('#activate').click(function(e) {
                 e.preventDefault();
-                let conf = confirm('You cannot edit the party after activation. Are you sure it is ok?')
-                if (conf) {
+                if (confirm('You cannot edit the party after activation. Are you sure it is ok?')) {
+                    let link = jQuery(this);
+                    jQuery.get(link.prop('href'), function (data) {
+                        window.location.replace('{% url 'admin:st_party_changelist' %}');
+                    }).fail(function () {
+                        document.location.reload();
+                    });
+                }
+            });
+            jQuery('#play').click(function(e) {
+                e.preventDefault();
+                if (confirm('Are you sure that you want to play the party now?')) {
                     let link = jQuery(this);
                     jQuery.get(link.prop('href'), function (data) {
                         window.location.replace('{% url 'admin:st_party_changelist' %}');
@@ -29,6 +39,11 @@
 {% block object-tools-items %}
     {{ block.super }}
     <li>
-        <a href="{% url 'admin:st_party_activate' original.id %}" class="btn-danger" id="activate">Activate</a>
+        {% if original.status == original.INACTIVE %}
+            <a href="{% url 'admin:st_party_activate' original.id %}" class="btn-danger" id="activate">Activate</a>
+        {% endif %}
+        {% if original.status == original.ACTIVE %}
+            <a href="{% url 'admin:st_party_play' original.id %}" class="btn-danger" id="play">Play</a>
+        {% endif %}
     </li>
 {% endblock %}

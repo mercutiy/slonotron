@@ -3,27 +3,37 @@
 {% block title %}{{ party.name }}{% endblock %}
 
 {% block content %}
-    <h2>{{ party.name }}</h2>
-    <p>{{ party.description }}</p>
-    {% if curr_member.present_to %}
-        <p>
-            You're presenting to:
-            <b>{{ curr_member.present_to.user.username }}</b>
-        </p>
-    {% else %}
-        <p>
-            It's unknown yet whom you're presenting to.
-            The game is starting {{ party.start_game }}.
-            You can set your scores with form bellow.
-        </p>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Apply</button>
-        </form>
-        {{ form.media }}
-        <script>
-            $('.slider').slider();
-        </script>
-    {% endif %}
+    <div style="margin: 10px">
+        <h3>{{ party.name }}</h3>
+        <p>{{ party.description }}</p>
+        {% if curr_member.present_to %}
+            <p>
+                You are presenting to:
+                <b>{{ curr_member.present_to.user.username }}</b>
+            </p>
+        {% else %}
+            {% load humanize %}
+            <p>{{ party.start_game | naturaltime }} to the game. Chose your priorities.</p>
+            <form method="post">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group row">
+                        <label class="col-sm-3 col-form-label">{{ field.label }}</label>
+                        <div class="col-sm-10">
+                            <div style="display: inline-block; font-size: 40px; margin-right: 20px;">&#128577;</div>
+                            {{ field }}
+                            <div style="display: inline-block; font-size: 40px; margin-left: 20px;">&#128578;</div>
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Apply</button>
+                </div>
+            </form>
+            {{ form.media }}
+            <script>
+                $('.slider').slider();
+            </script>
+        {% endif %}
+    </div>
 {% endblock %}

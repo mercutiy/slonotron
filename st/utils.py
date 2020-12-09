@@ -13,16 +13,12 @@ def shuffle(party, check=False):
     for from_member_id, to_member_id, value in scores:
         matrix[from_member_id][to_member_id] = value
 
-    print(matrix)
-
     for from_member in members:
         for to_member in members:
             if from_member == to_member:
                 matrix[from_member.id][to_member.id] = 0
             else:
                 matrix[from_member.id].setdefault(to_member.id, 5)
-
-    print(matrix)
 
     best_path = calc_best_path(matrix, check)
 

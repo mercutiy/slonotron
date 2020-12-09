@@ -4,10 +4,20 @@
 
 {% block content %}
     {% if parties %}
-        {% for party in parties %}
-            <a href="{% url 'party' party_id=party.id %}">{{ party.name }}</a>
-        {% endfor %}
+        {% load humanize %}
+        <div class="list-group">
+            {% for party in parties %}
+                <a href="{% url 'party' party_id=party.id %}"
+                   class="list-group-item list-group-item-action flex-column align-items-start {% if party.status == party.ACTIVE %}active{% endif %}">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ party.name }}</h5>
+                        <small>{{ party.start_game | naturaltime }}</small>
+                    </div>
+                    <p class="mb-1">{{ party.description }}</p>
+                </a>
+            {% endfor %}
+        </div>
     {% else %}
-        <p>You don't have any active parties now.</p>
+        <p>You don't have any parties now :(.</p>
     {% endif %}
 {% endblock %}
