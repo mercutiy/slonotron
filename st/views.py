@@ -35,6 +35,7 @@ def party(request: HttpRequest, party_id: int) -> HttpResponse:
         Score.objects.filter(from_member=curr_member).values_list('to_member__id', 'value'))
     for member in members:
         member.score = scores.get(member.id, 5)
+    members = filter(lambda m: m.score, members)
 
     if request.method == 'POST':
         form = ScalesForm(curr_member, members, request.POST)
@@ -47,7 +48,7 @@ def party(request: HttpRequest, party_id: int) -> HttpResponse:
                     value=value
                 ) for member_key, value in form.cleaned_data.items() if value != 5
             ]
-            Score.objects.filter(from_member=curr_member).delete()
+            Score.objects.filter(from_member=curr_member).exclude(value=0).delete()
             Score.objects.bulk_create(updated_scores)
             return redirect('party', party_id=party_id)
     else:
