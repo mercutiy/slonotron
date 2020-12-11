@@ -5,7 +5,7 @@ from collections import defaultdict
 from .models import Score, Member, Party
 
 
-def shuffle(party, check=False):
+def shuffle(party, dry_run=False):
     members = party.member_set.all()
     scores = Score.objects.filter(from_member__in=members).values_list(
         'from_member_id', 'to_member_id', 'value')
@@ -20,9 +20,9 @@ def shuffle(party, check=False):
             else:
                 matrix[from_member.id].setdefault(to_member.id, 5)
 
-    best_path = calc_best_path(matrix, check)
+    best_path = calc_best_path(matrix, dry_run)
 
-    if check:
+    if dry_run:
         return best_path
     if not best_path:
         raise Exception('Cannot found any way')
@@ -34,13 +34,10 @@ def shuffle(party, check=False):
     return best_path
 
 
-def calc_best_path(matrix, check=False):
+def calc_best_path(matrix, dry_run=False):
     members_list = list(matrix.keys())
     random.shuffle(members_list)
     members = len(members_list)
-
-    print(matrix, members_list, members)
-
     best_path = []
     best_score = 0
     for curr_path in itertools.permutations(members_list):
@@ -52,7 +49,7 @@ def calc_best_path(matrix, check=False):
                 break
             curr_score += score
         if best_score < curr_score:
-            if check:
+            if dry_run:
                 return curr_path
             best_score = curr_score
             best_path = curr_path

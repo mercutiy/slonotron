@@ -40,7 +40,6 @@ def party(request: HttpRequest, party_id: int) -> HttpResponse:
     if request.method == 'POST':
         form = ScalesForm(curr_member, members, request.POST)
         if form.is_valid():
-            print(form.cleaned_data)
             updated_scores = [
                 Score(
                     from_member_id=curr_member.id,
