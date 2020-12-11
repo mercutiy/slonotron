@@ -28,6 +28,7 @@ class Command(BaseCommand):
         members = dict(
             Member.objects.filter(party=party).values_list('id', 'user__username'))
         members_count = len(best_path)
+        total_score = 0
         for i in range(members_count):
             from_member = best_path[i]
             to_member = best_path[(i + 1) % members_count]
@@ -38,6 +39,7 @@ class Command(BaseCommand):
                 ).value
             except Score.DoesNotExist:
                 score = 5
+            total_score += score
             self.stdout.write(
                 '{} -{}-> {}'.format(members[from_member], score, members[to_member]))
-        self.stdout.write('Members have been shuffled!')
+        self.stdout.write('Members have been shuffled! Total score: {}'.format(total_score))
