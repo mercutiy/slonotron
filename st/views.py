@@ -49,6 +49,8 @@ def party(request: HttpRequest, party_id: int) -> HttpResponse:
             ]
             Score.objects.filter(from_member=curr_member).exclude(value=0).delete()
             Score.objects.bulk_create(updated_scores)
+            curr_member.is_applied = True
+            curr_member.save()
             return redirect('party', party_id=party_id)
     else:
         form = ScalesForm(curr_member, members)

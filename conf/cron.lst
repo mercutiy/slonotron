@@ -21,4 +21,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-0 * * * * touch /opt/bitnami/projects/slonotron/test.log
+0 0 * * * python /opt/bitnami/projects/slonotron/manage.py shuffle > /opt/bitnami/var/log/shuffle.log

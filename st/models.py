@@ -38,6 +38,7 @@ class Member(models.Model):
     party = models.ForeignKey(Party, on_delete=models.CASCADE)
     present_to = models.OneToOneField('Member', on_delete=models.CASCADE,
                                       null=True, default=None)
+    is_applied = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('user', 'party')
