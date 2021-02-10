@@ -13,9 +13,10 @@ class Party(models.Model):
     )
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000)
-    date = models.DateField()
+    date = models.DateField(null=True)
     status = models.SmallIntegerField(choices=STATUS_CHOICES, default=INACTIVE)
-    start_game = models.DateTimeField()
+    start_game = models.DateTimeField(null=True)
+    admin = models.ForeignKey(User, on_delete=models.CASCADE, null=True, default=None)
 
     class Meta:
         verbose_name_plural = 'parties'

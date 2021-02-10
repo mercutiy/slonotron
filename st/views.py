@@ -1,9 +1,8 @@
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render, redirect
 
-from st.forms import ScalesForm
+from st.forms import ScalesForm, PartyForm
 from st.models import Party, Member, Score
 
 
@@ -63,6 +62,39 @@ def party(request: HttpRequest, party_id: int) -> HttpResponse:
     }
     context.update(get_parties_ctx(request))
     return render(request, 'party.html', context)
+
+
+@login_required(login_url='/login/')
+def create_party(request: HttpRequest) -> HttpResponse:
+    if request.method == 'POST':
+        form = PartyForm(request.user, request.POST)
+        if form.is_valid():
+            party = form.save()
+            return redirect('edit_party', party_id=party.id)
+    else:
+        form = PartyForm(request.user)
+    context = {
+        'form': form
+    }
+    context.update(get_parties_ctx(request))
+    return render(request, 'create_party.html', context)
+
+
+@login_required(login_url='/login/')
+def edit_party(request: HttpRequest, party_id: int) -> HttpResponse:
+    try:
+        party = Party.objects.get(id=party_id, admin=request.user)
+    except (Party.DoesNotExist, Member.DoesNotExist):
+        return redirect('parties')
+    if request.method == 'POST':
+        pass
+    else:
+        pass
+    context = {
+        'party': party
+    }
+    context.update(get_parties_ctx(request))
+    return render(request, 'edit_party.html', context)
 
 
 @login_required
